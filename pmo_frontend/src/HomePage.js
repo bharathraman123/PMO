@@ -261,6 +261,21 @@ const EmployeeList = () => {
             <Button variant="contained" color="secondary">
               Deallocate
             </Button>
+            {/* New Buttons */}
+            <Button
+              variant="contained"
+              color="success"
+              onClick={() => navigate("/upcoming_project")}
+            >
+              Upcoming Project
+            </Button>
+            <Button
+              variant="contained"
+              color="info"
+              onClick={() => navigate("/project_list")}
+            >
+              Project List
+            </Button>
           </Box>
         </>
       )}

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PMO_Backend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+103a6416e77674740fdee1ae96e1eb5ea22e83a8")]
 [assembly: System.Reflection.AssemblyProductAttribute("PMO_Backend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PMO_Backend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

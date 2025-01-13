@@ -91,13 +91,14 @@ const CreateProjectPage = () => {
     const projectData = {
       projectName,
       projectManager,
-      startDate,
-      endDate,
+      startDate: startDate ? startDate.format("YYYY-MM-DD") : null,
+      endDate: endDate ? endDate.format("YYYY-MM-DD") : null,
       teamMembers,
     };
+
     console.log("Project Created:", projectData);
     localStorage.clear(); // Clear localStorage after project creation
-    navigate("/homepage");
+    navigate("/project_list", { state: { projectData } });
   };
 
   const categorizedMembers = roles.map((role) => ({
@@ -107,6 +108,7 @@ const CreateProjectPage = () => {
 
   return (
     <div style={{ maxWidth: "800px", margin: "auto", padding: "20px" }}>
+       <Button onClick={() => navigate(-1)}>Back</Button>
       <h2>Create a New Project</h2>
       <div style={{ marginBottom: "20px" }}>
         <label>Project Name</label>
@@ -239,6 +241,7 @@ const CreateProjectPage = () => {
           marginTop: "20px",
         }}
       >
+       
         <Button onClick={() => navigate("/homepage")}>Cancel</Button>
         <Button type="primary" onClick={handleCreateProject}>
           Create Project

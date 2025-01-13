@@ -30,6 +30,23 @@ public class EmployeesController : ControllerBase
         return Ok(projects);
     }
 
+    // Create a new project
+    [HttpPost("projects")]
+    public async Task<IActionResult> CreateProject([FromBody] Project project)
+    {
+        if (project == null)
+        {
+            return BadRequest(new { message = "Project data is invalid." });
+        }
+
+        // Add the new project to the database
+        _context.Projects.Add(project);
+        await _context.SaveChangesAsync();
+
+        // Return the created project, including the auto-generated Id
+        return CreatedAtAction(nameof(GetProjects), new { id = project.Id }, project);
+    }
+
     // Update a project
     [HttpPut("projects/{id}")]
     public async Task<IActionResult> UpdateProject(int id, [FromBody] Project updatedProject)

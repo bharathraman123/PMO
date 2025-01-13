@@ -1,74 +1,97 @@
 import React, { useState, useEffect } from "react";
 import { Table, Button, Modal, Input, Select, DatePicker, message } from "antd";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { EditOutlined, DeleteOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import axios from "axios";
 import dayjs from "dayjs";
+import { useNavigate } from "react-router-dom";
+
 
 const { Option } = Select;
+const { confirm } = Modal;
 
 const ProjectListPage = () => {
   const [projects, setProjects] = useState([]);
+  const [projectManagers, setProjectManagers] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [editingProject, setEditingProject] = useState(null);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchProjects();
+    fetchProjectManagers();
   }, []);
 
   const fetchProjects = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("http://your-backend-url/api/projects");
+      const response = await axios.get("http://localhost:5228/api/employees/projects"); // Corrected URL
       setProjects(response.data);
     } catch (error) {
       console.error("Error fetching projects:", error);
-      message.error("Failed to fetch projects.");
+      message.error("Failed to fetch projects. Please try again later.");
     }
     setLoading(false);
   };
 
+  const fetchProjectManagers = async () => {
+    try {
+      const response = await axios.get("http://localhost:5228/api/employees"); // Corrected URL
+      setProjectManagers(response.data);
+    } catch (error) {
+      console.error("Error fetching project managers:", error);
+      message.error("Failed to fetch project managers.");
+    }
+  };
+
   const handleEdit = (project) => {
-    setEditingProject(project);
+    setEditingProject({ ...project }); // Make a copy to avoid directly mutating state
     setIsEditing(true);
   };
 
   const handleSaveEdit = async () => {
     try {
       const response = await axios.put(
-        `http://your-backend-url/api/projects/${editingProject.id}`,
+        `http://localhost:5228/api/employees/projects/${editingProject.id}`, // Corrected URL
         editingProject
       );
 
       if (response.status === 200) {
         message.success("Project updated successfully!");
         setIsEditing(false);
+        setEditingProject(null);
         fetchProjects(); // Refresh project list
       } else {
         message.error("Failed to update project.");
       }
     } catch (error) {
       console.error("Error updating project:", error);
-      message.error("Failed to update project.");
+      message.error("Failed to update project. Please check your input and try again.");
     }
   };
 
-  const handleDisable = async (id) => {
-    try {
-      const response = await axios.put(
-        `http://your-backend-url/api/projects/${id}/disable`
-      );
+  const handleDisable = (id) => {
+    confirm({
+      title: "Are you sure you want to disable this project?",
+      icon: <ExclamationCircleOutlined />,
+      onOk: async () => {
+        try {
+          const response = await axios.put(
+            `http://localhost:5228/api/employees/projects/${id}/disable` // Corrected URL
+          );
 
-      if (response.status === 200) {
-        message.success("Project disabled successfully!");
-        fetchProjects(); // Refresh project list
-      } else {
-        message.error("Failed to disable project.");
-      }
-    } catch (error) {
-      console.error("Error disabling project:", error);
-      message.error("Failed to disable project.");
-    }
+          if (response.status === 200) {
+            message.success("Project disabled successfully!");
+            fetchProjects(); // Refresh project list
+          } else {
+            message.error("Failed to disable project.");
+          }
+        } catch (error) {
+          console.error("Error disabling project:", error);
+          message.error("Failed to disable project.");
+        }
+      },
+    });
   };
 
   const columns = [
@@ -121,6 +144,7 @@ const ProjectListPage = () => {
 
   return (
     <div style={{ padding: "20px" }}>
+      <Button onClick={() => navigate(-1)}>Back</Button>
       <h2>Project List</h2>
       <Table
         dataSource={projects}
@@ -135,7 +159,10 @@ const ProjectListPage = () => {
         <Modal
           title="Edit Project"
           visible={isEditing}
-          onCancel={() => setIsEditing(false)}
+          onCancel={() => {
+            setIsEditing(false);
+            setEditingProject(null); // Reset editing state
+          }}
           onOk={handleSaveEdit}
         >
           <div style={{ marginBottom: "10px" }}>
@@ -162,8 +189,11 @@ const ProjectListPage = () => {
                 }))
               }
             >
-              <Option value="manager1">Manager 1</Option>
-              <Option value="manager2">Manager 2</Option>
+              {projectManagers.map((manager) => (
+                <Option key={manager.id} value={manager.name}>
+                  {manager.name}
+                </Option>
+              ))}
             </Select>
           </div>
           <div style={{ display: "flex", gap: "10px", marginBottom: "10px" }}>
